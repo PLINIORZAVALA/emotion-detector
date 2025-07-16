@@ -9,7 +9,7 @@ from tensorflow.keras.models import model_from_json, Sequential
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.utils import get_custom_objects
 
-# ========== Clase BlurLayer EXACTA DEL ENTRENAMIENTO ==========
+# ========== BlurLayer class EXACTLY as in training ========== 
 @tf.keras.utils.register_keras_serializable()
 class BlurLayer(tf.keras.layers.Layer):
     def __init__(self, **kwargs):
@@ -28,27 +28,27 @@ class BlurLayer(tf.keras.layers.Layer):
     def call(self, x):
         return tf.nn.depthwise_conv2d(x, self.blur_filter, strides=[1, 1, 1, 1], padding='SAME')
 
-# ========== Registro de clases personalizadas ==========
+# ========== Register custom classes ========== 
 get_custom_objects()['BlurLayer'] = BlurLayer
 get_custom_objects()['Sequential'] = Sequential
 
-# ========== Configuración de emociones ==========
+# ========== Emotion configuration ========== 
 classes = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
-colors = ['r', 'g', 'b', 'y', 'k', 'm', 'c']  # Lista válida de colores
+colors = ['r', 'g', 'b', 'y', 'k', 'm', 'c']  # Valid list of colors
 x = list(range(len(classes)))
 y = [0.0] * len(classes)
 
-# ========== Configuración de gráfico ==========
+# ========== Live plot configuration ========== 
 plt.ion()
 figure = plt.figure()
 
-# ========== Detector de rostros (modelo Caffe) ==========
+# ========== Face detector (Caffe model) ========== 
 face_model_path = "face_detector"
 prototxtPath = f"{face_model_path}/deploy.prototxt"
 weightsPath = f"{face_model_path}/res10_300x300_ssd_iter_140000.caffemodel"
 faceNet = cv2.dnn.readNet(prototxtPath, weightsPath)
 
-# ========== Cargar modelo de emociones ==========
+# ========== Load emotion model ========== 
 with open("model/67emotion_human.json", "r") as json_file:
     model_json = json_file.read()
 
@@ -58,9 +58,9 @@ emotionModel = model_from_json(model_json, custom_objects={
 })
 
 emotionModel.load_weights("model/67emotion_human.h5")
-print("✅ Modelo cargado exitosamente")
+print("✅ Model successfully loaded")
 
-# ========== Función para predecir emociones ==========
+# ========== Emotion prediction function ========== 
 def predict_emotion(frame, faceNet, emotionModel):
     blob = cv2.dnn.blobFromImage(frame, 1.0, (300, 300), (104.0, 177.0, 123.0))
     faceNet.setInput(blob)
@@ -81,7 +81,7 @@ def predict_emotion(frame, faceNet, emotionModel):
 
             face = frame[Yi:Yf, Xi:Xf]
             if face.size == 0:
-                continue  # evitar errores si el recorte es inválido
+                continue  # skip if the cropped face is invalid
 
             face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
             face = cv2.resize(face, (48, 48))
@@ -94,20 +94,20 @@ def predict_emotion(frame, faceNet, emotionModel):
 
     return locs, preds
 
-# ========== Iniciar cámara ==========
+# ========== Start webcam ========== 
 cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
 if not cam.isOpened():
-    print("❌ No se pudo abrir la cámara")
+    print("❌ Failed to open webcam")
     exit()
 
 prev_frame_time = 0
 
-# ========== Bucle principal ==========
+# ========== Main loop ========== 
 while True:
     ret, frame = cam.read()
     if not ret or frame is None:
-        print("⚠️ No se pudo capturar el frame.")
+        print("⚠️ Failed to capture frame.")
         continue
 
     frame = imutils.resize(frame, width=640)
@@ -118,12 +118,12 @@ while True:
         (angry, disgust, fear, happy, neutral, sad, surprise) = pred
         label = f"{classes[np.argmax(pred)]}: {np.max(pred) * 100:.0f}%"
 
-        # Dibujar etiquetas y caja
+        # Draw label and bounding box
         cv2.rectangle(frame, (Xi, Yi - 40), (Xf, Yi), (255, 0, 0), -1)
         cv2.putText(frame, label, (Xi + 5, Yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
         cv2.rectangle(frame, (Xi, Yi), (Xf, Yf), (255, 0, 0), 2)
 
-        # Actualizar gráfico
+        # Update emotion bar plot
         y = [angry, disgust, fear, happy, neutral, sad, surprise]
         plt.clf()
         plt.xticks(x, classes)
@@ -132,7 +132,7 @@ while True:
         plt.bar(x, y, color=colors, width=0.8)
         figure.canvas.draw()
 
-    # Calcular FPS
+    # Calculate FPS
     new_frame_time = time.time()
     fps = 1 / (new_frame_time - prev_frame_time) if prev_frame_time != 0 else 0
     prev_frame_time = new_frame_time
@@ -143,6 +143,6 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# ========== Limpiar ==========
+# ========== Cleanup ========== 
 cam.release()
 cv2.destroyAllWindows()

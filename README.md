@@ -1,6 +1,6 @@
 # Real-Time Emotion Detection using CNN and OpenCV
 
-This project implements a real-time facial emotion detection system using a convolutional neural network (CNN) model trained on the FER2013 dataset, combined with face detection using OpenCV and dynamic emotion visualization with Matplotlib.
+This project implements a real-time facial emotion detection system using a convolutional neural network (CNN) model trained on the FER2013 dataset. It combines OpenCV for face detection and Matplotlib for live emotion probability visualization.
 
 ---
 
@@ -10,41 +10,44 @@ This project implements a real-time facial emotion detection system using a conv
 
 emotion-detector/
 │
-├── face_detector/                         # Contains the pre-trained face detection model (based on Caffe)
-│   ├── deploy.prototxt                    # Model architecture definition
-│   └── res10_300x300_ssd_iter_140000.caffemodel  # Weights of the face detection model
+├── face\_detector/                          # Pre-trained face detection model (Caffe)
+│   ├── deploy.prototxt                     # Model architecture definition
+│   ├── res10\_300x300\_ssd\_iter\_140000.caffemodel  # Model weights
+│   └── z\_links.txt                         # Optional: download links or reference
 │
-├── model/                                 # Folder for the emotion classification model
-│   └── modelFEC.h5                        # CNN model trained to classify facial emotions
+├── model/                                  # Emotion classification model
+│   ├── 67emotion\_human.h5                  # CNN model weights
+│   └── 67emotion\_human.json                # CNN model architecture
 │
-├── main.py                                # Main script that runs real-time emotion detection
+├── main.py                                 # Main script for real-time emotion detection
 │
-├── requirements.txt                       # List of dependencies for the virtual environment
+├── requirements.txt                        # Python dependencies
 │
-└── README.md                              # Project documentation and usage instructions
-
+└── README.md                               # Documentation and instructions
 
 ````
 
 ---
 
-## 🔧 Features
+## Features
 
-- Real-time face detection with OpenCV and SSD model.
-- Facial emotion classification: `angry`, `disgust`, `fear`, `happy`, `neutral`, `sad`, `surprise`.
-- Visualization of probabilities in real-time bar charts with Matplotlib.
-- Display of the dominant emotion on the detected face, along with the performance in FPS.
+- Real-time face detection using OpenCV and SSD model (Caffe).
+- Emotion classification: `angry`, `disgust`, `fear`, `happy`, `neutral`, `sad`, `surprise`.
+- Live Matplotlib bar chart showing emotion probabilities.
+- FPS and emotion label overlay on webcam video.
 
 ---
 
 ## Requirements
 
-- Python 3.7 or higher
+- Python **3.10.11**
+- Windows 10/11 (tested on PowerShell)
 - Working webcam
+- Virtual environment (`venv`)
 
 ---
 
-## Installation and Running
+## Installation and Running (Windows 10/11)
 
 ### 1. Clone the repository
 
@@ -53,33 +56,26 @@ git clone https://github.com/your-user/emotion-detector.git
 cd emotion-detector
 ````
 
-### 2. Create a virtual environment with `venv`
+### 2. Create a virtual environment
 
-```bash
-python -m venv venv
+```powershell
+python -m venv venv310
 ```
 
 ### 3. Activate the virtual environment
 
-* On **Windows**:
-
-```bash
-venv\Scripts\activate
-```
-
-* On **Linux/macOS**:
-
-```bash
-source venv/bin/activate
+```powershell
+.\venv310\Scripts\Activate
 ```
 
 ### 4. Install dependencies
 
 ```bash
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-> **Note**: If your computer has a CUDA-compatible GPU, you can install the optimized version of TensorFlow (`tensorflow-gpu`).
+> If you're not using a GPU, TensorFlow will fall back to CPU. You can ignore `cudart64_110.dll` or `nvcuda.dll` warnings unless you're setting up CUDA.
 
 ### 5. Run the system
 
@@ -87,37 +83,44 @@ pip install -r requirements.txt
 python main.py
 ```
 
-Press `q` to close the camera window and end the program.
+Press `q` to exit the camera feed.
 
 ---
 
-## Models used
+## Models Used
 
-* **Face detector**: Based on the pre-trained `ResNet SSD` (Single Shot Multibox Detector) OpenCV model with Caffe architecture.
-* **Emotion detector**: Convolutional neural network trained on the FER2013 dataset.
+* **Face Detector**: `res10_300x300_ssd_iter_140000.caffemodel` based on Single Shot Detector with Caffe.
+* **Emotion Detector**: Custom CNN model using a `BlurLayer`, trained on FER2013 dataset.
+
+  * `67emotion_human.json` – model architecture
+  * `67emotion_human.h5` – model weights
 
 ---
 
 ## Visualization
 
-During execution:
+* Detected faces are outlined with bounding boxes and labeled with the predicted emotion + confidence.
+* A real-time **bar chart** shows the probabilities of all 7 emotions per frame.
 
-* A **bounding box** is displayed with the dominant emotion and its probability on the detected face.
-* A **real-time** bar chart is displayed with the probability of each emotion.
+---
+
+## Windows-Specific Notes
+
+* Webcam initialized with `cv2.VideoCapture(0, cv2.CAP_DSHOW)` for better compatibility.
+* Run from PowerShell or CMD, not from within VS Code’s Run button.
+* Ensure no other app is using the webcam.
+* TensorFlow CPU is used by default; no GPU or CUDA is required.
 
 ---
 
 ## License
 
-This project is distributed under the MIT License. You may use, modify, and redistribute it for educational and research purposes.
+MIT License – free to use, modify, and redistribute for educational or research purposes.
 
 ---
 
 ## Credits
 
-* Original project based on the YouTube channel [David Revelo Luna](https://www.youtube.com/channel/UCr_dJOULDvSXMHA1PSHy2rg)
-* Modified and extended by Plinior Zavala with emotion visualization and a professional project structure.
+* Inspired by [David Revelo Luna](https://www.youtube.com/channel/UCr_dJOULDvSXMHA1PSHy2rg)
+* Adapted and improved by **Plinior Zavala** with emotion graphing, cleaner structure, and Windows compatibility.
 
----
-
-```
