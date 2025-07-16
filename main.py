@@ -4,8 +4,12 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 
-from tensorflow.keras.models import model_from_json  # Change here
-from tensorflow.keras.preprocessing.image import img_to_array
+from tensorflow.keras.models import model_from_json
+from tensorflow.keras.models import Sequential
+from keras.saving import register_keras_serializable
+
+# Register Sequential to resolve deserialization issue
+register_keras_serializable()(Sequential)
 
 # Emotion classes
 classes = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
