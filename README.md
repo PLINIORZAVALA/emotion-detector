@@ -10,18 +10,19 @@ This project implements a real-time facial emotion detection system using a conv
 
 emotion-detector/
 │
-├── face\_detector/ # Contains the pre-trained model for face detection (based on Caffe)
-│ ├── deploy.prototxt # Model architecture definition
-│ └── res10\_300x300\_ssd\_iter\_140000.caffemodel # Face detection model weights
+├── face_detector/                         # Contains the pre-trained face detection model (based on Caffe)
+│   ├── deploy.prototxt                    # Model architecture definition
+│   └── res10_300x300_ssd_iter_140000.caffemodel  # Weights of the face detection model
 │
-├── model/
-│ └── modelFEC.h5 # CNN model trained to classify facial emotions
+├── model/                                 # Folder for the emotion classification model
+│   └── modelFEC.h5                        # CNN model trained to classify facial emotions
 │
-├── main.py # Main script that runs emotion detection in real time
+├── main.py                                # Main script that runs real-time emotion detection
 │
-├── requirements.txt # List of Virtual environment dependencies (required libraries)
+├── requirements.txt                       # List of dependencies for the virtual environment
 │
-└── README.md # Project description and documentation
+└── README.md                              # Project documentation and usage instructions
+
 
 ````
 
