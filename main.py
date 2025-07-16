@@ -4,12 +4,25 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 
-from tensorflow.keras.models import model_from_json
-from tensorflow.keras.models import Sequential
-from keras.saving import register_keras_serializable
+from tensorflow.keras.models import model_from_json, Sequential
+from tensorflow.keras.preprocessing.image import img_to_array
+from tensorflow.keras.utils import get_custom_objects
+import tensorflow as tf
 
-# Register Sequential to resolve deserialization issue
-register_keras_serializable()(Sequential)
+# Registrar la clase Sequential
+get_custom_objects()['Sequential'] = Sequential
+
+# Registrar la clase BlurLayer
+@tf.keras.utils.register_keras_serializable()
+class BlurLayer(tf.keras.layers.Layer):
+    def __init__(self, **kwargs):
+        super(BlurLayer, self).__init__(**kwargs)
+
+    def call(self, inputs):
+        # Aquí deberías implementar la lógica real de BlurLayer si la conoces
+        return inputs
+
+get_custom_objects()['BlurLayer'] = BlurLayer
 
 # Emotion classes
 classes = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
@@ -28,11 +41,11 @@ weightsPath = f"{face_model_path}/res10_300x300_ssd_iter_140000.caffemodel"
 faceNet = cv2.dnn.readNet(prototxtPath, weightsPath)
 
 # Load emotion classification model from JSON + H5
-with open("model/modelFEC.json", "r") as json_file:
+with open("model/67emotion_human.json", "r") as json_file:
     model_json = json_file.read()
 
 emotionModel = model_from_json(model_json)
-emotionModel.load_weights("model/modelFEC.h5")
+emotionModel.load_weights("model/67emotion_human.h5")
 
 # Function to detect faces and predict emotion
 def predict_emotion(frame, faceNet, emotionModel):
